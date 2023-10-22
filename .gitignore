@@ -2,3 +2,4 @@ node_modules/
 src/server/.venv/
 src/server/uploads/
 src/server/saved_models/
+HAM10000/
