@@ -3,7 +3,10 @@ from torchvision import transforms
 import os
 import shutil
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
+from sklearn.utils import resample
+import pandas as pd
+import random
 
 #DATA RESTRUCTURING
 # data_dir = os.getcwd() + "/HAM10000/all_images/"
