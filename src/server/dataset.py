@@ -1,12 +1,12 @@
 import torchvision
 from torchvision import transforms
 import os
-import shutil
 import torch
 from torch.utils.data import DataLoader, Subset
 from sklearn.utils import resample
-import pandas as pd
 import random
+from PIL import Image
+import shutil
 
 #DATA RESTRUCTURING
 # data_dir = os.getcwd() + "/HAM10000/all_images/"
@@ -27,19 +27,44 @@ import random
 #     label_images = []
 
 
-#PYTORCH TENSOR CREATION
-train_dir = os.getcwd() + "/HAM10000/reorganized/"
-
-def getTransforms():
-    return transforms.Compose([
-        transforms.Resize(32),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean = [0.5,0.5,0.5], std = [0.229,0.224,0.225])
-    ])
-
-def getDataSet(root_dir, transforms):
-    return torchvision.datasets.ImageFolder(root = root_dir, transform = transforms)
-
-def getDataLoader(dataset, batch_size = 32, shuffle = True):
-    return DataLoader(dataset, batch_size = batch_size, shuffle=shuffle)
+class DataSet:
+    def __init__(self, data_dir):
+        self.data_dir = data_dir
+        self.train_dir = os.path.join(self.data_dir, "reorganized/")
+        self.transform = transforms.Compose([
+            transforms.Resize(32),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean = [0.5,0.5,0.5], std = [0.229,0.224,0.225])
+        ])
+    
+    def resampleDataSet(self, targetSamples):
+        full_dataset = torchvision.datasets.ImageFolder(root=self.train_dir, transform=self.transform)
+        class_indices = self.getClassIndices(full_dataset)
+        balanced_indices = []
+        for indices in class_indices.values():
+            if len(indices) > targetSamples:
+                # Downsample
+                balanced_indices.extend(random.sample(indices, targetSamples))
+            else:
+                # Oversample: we're not replicating data on disk, just using indices more than once
+                balanced_indices.extend(indices + [random.choice(indices) for _ in range(targetSamples - len(indices))])
+        # Create a dataset from the balanced indices
+        balanced_subset = Subset(full_dataset, balanced_indices)
+        return balanced_subset
+    
+    def getClassIndices(self, dataset):
+        class_indices = {}
+        for idx, (_, target) in enumerate(dataset):
+            if target not in class_indices:
+                class_indices[target] = []
+            class_indices[target].append(idx)
+        return class_indices
+    
+    def prepareDataSet(self, targetSamples):
+        balanced_dataset = self.resampleDataSet(targetSamples)
+        return balanced_dataset
+    
+    @staticmethod
+    def getDataLoader(dataset, batch_size=32, shuffle=True):
+        return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
