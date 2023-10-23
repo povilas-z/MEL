@@ -1,12 +1,10 @@
 import torchvision
 from torchvision import transforms
 import os
-import torch
 from torch.utils.data import DataLoader, Subset
-from sklearn.utils import resample
 import random
-from PIL import Image
 import shutil
+import pandas as pd
 
 #DATA RESTRUCTURING
 # data_dir = os.getcwd() + "/HAM10000/all_images/"
@@ -47,9 +45,9 @@ class DataSet:
                 # Downsample
                 balanced_indices.extend(random.sample(indices, targetSamples))
             else:
-                # Oversample: we're not replicating data on disk, just using indices more than once
+                # Oversample
                 balanced_indices.extend(indices + [random.choice(indices) for _ in range(targetSamples - len(indices))])
-        # Create a dataset from the balanced indices
+        # Create a dataset
         balanced_subset = Subset(full_dataset, balanced_indices)
         return balanced_subset
     

@@ -12,6 +12,7 @@ class Model:
             param.requires_grad = False
         num_ftrs = model.fc.in_features
         model.fc = nn.Linear(num_ftrs, self.outputClasses) 
+        return model
     
     def getModel(self):
         return self.model
