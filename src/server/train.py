@@ -11,7 +11,7 @@ DATA_DIR = os.getcwd() + "/HAM10000/"
 TARGET_SAMPLES = 500 
 NUM_CLASSES = 7 
 BATCH_SIZE = 32
-NUM_EPOCHS = 25
+NUM_EPOCHS = 15
 LEARNING_RATE = 0.001
 STEP_SIZE = 7
 GAMMA = 0.1
@@ -57,7 +57,7 @@ for epoch in range(NUM_EPOCHS):
     
     scheduler.step()
     epoch_loss = running_loss / len(train_loader.dataset)
-    epoch_acc = correct_predictions.double() / len(train_loader.dataset)
+    epoch_acc = correct_predictions.float() / len(train_loader.dataset)
 
     print('Epoch {}/{} - Loss: {:.4f}'.format(epoch+1, NUM_EPOCHS, epoch_loss))
     
@@ -68,5 +68,5 @@ writer.close()
 print("Finished training")
 
 #Save model
-torch.save(model.state_dict(), os.getcwd() + "/src/server/saved_models")
+torch.save(model.state_dict(), os.getcwd() + "/src/server/saved_models/model1.pth")
 print("model saved")
