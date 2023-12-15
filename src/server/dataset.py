@@ -30,10 +30,11 @@ class DataSet:
         self.data_dir = data_dir
         self.train_dir = os.path.join(self.data_dir, "reorganized/")
         self.transform = transforms.Compose([
-            transforms.Resize(32),
+            transforms.Resize(224),
             transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize(mean = [0.5,0.5,0.5], std = [0.229,0.224,0.225])
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.229, 0.224, 0.225])
         ])
     
     def resampleDataSet(self, targetSamples):

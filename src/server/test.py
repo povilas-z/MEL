@@ -1,26 +1,27 @@
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-from models import Model  # Make sure this path is correct
+from models import Model
 import os
 
-# Set device
+#Device for macbook
 device = torch.device("cuda" if torch.cuda.is_available() else "mps")
 
 # Load the model
-output_classes = 7  # set this to the number of your output classes
-model = Model(output_classes).getModel()
-model_path = os.getcwd() + "/src/server/saved_models/model1.pth"
+OUTPUT_CLASSES = 7  #output classes
+model = Model(OUTPUT_CLASSES).getModel()
+model_path = os.getcwd() + "/src/server/saved_models/model6.pth"
 model.load_state_dict(torch.load(model_path))
 model.to(device)
-model.eval()  # set model to evaluation mode
+model.eval()
 
-# Define the transformations for the test data
+# Define the transformations
 test_transforms = transforms.Compose([
-    transforms.Resize(32),
+    transforms.Resize(224),
     transforms.RandomHorizontalFlip(),
+    transforms.RandomVerticalFlip(),
     transforms.ToTensor(),
-    transforms.Normalize(mean = [0.5,0.5,0.5], std = [0.229,0.224,0.225])
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.229, 0.224, 0.225])
 ])
 
 # Load the test dataset
